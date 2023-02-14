@@ -157,6 +157,7 @@ class NetBox210DiffSync(N2NDiffSync):
 
 class Netbox34DiffSync(NetBox210DiffSync):
     """DiffSync adapter for working with data from NetBox 3.4.x."""
+
     def load(self):
         """Load records from the provided source_data into DiffSync."""
         self.logger.info("Loading imported NetBox source data into DiffSync...")
