@@ -32,9 +32,9 @@ class Provider(PrimaryModel):
         "slug",
         "asn",
         "account",
-        "portal_url",
-        "noc_contact",
-        "admin_contact",
+        # "portal_url",
+        # "noc_contact",
+        # "admin_contact",
         "comments",
     )
     _nautobot_model = circuits.Provider
@@ -43,9 +43,9 @@ class Provider(PrimaryModel):
     slug: str
     asn: Optional[int]
     account: str
-    portal_url: str
-    noc_contact: str
-    admin_contact: str
+    # portal_url: str
+    # noc_contact: str
+    # admin_contact: str
     comments: str
 
 

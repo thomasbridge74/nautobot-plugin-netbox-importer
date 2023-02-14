@@ -1,5 +1,6 @@
 """DiffSync adapters for NetBox data dumps."""
 
+import sys
 import json
 from uuid import uuid4
 
@@ -148,6 +149,46 @@ class NetBox210DiffSync(N2NDiffSync):
                     verbosity=self.verbosity,
                 ):
                     self.load_record(diffsync_model, record)
+
+        self.logger.info("Data loading from NetBox source data complete.")
+        # Discard the source data to free up memory
+        self.source_data = None
+
+
+class Netbox34DiffSync(NetBox210DiffSync):
+    def load(self):
+        self.logger.info("Loading imported NetBox source data into DiffSync...")
+        for modelname in ("contenttype", "permission", *self.top_level):
+            diffsync_model = getattr(self, modelname)
+            content_type_label = diffsync_model.nautobot_model()._meta.label_lower
+            # Handle a NetBox vs Nautobot discrepancy - the Nautobot target model is 'users.user',
+            # but the NetBox data export will have user records under the label 'auth.user'.
+            if content_type_label == "users.user":
+                content_type_label = "auth.user"
+
+            # Some model types in Netbox 3.4 don't have an obvious equivalent in Nautobot
+            if content_type_label in [
+                "dcim.sitegroup",
+                "circuits.circuittermination",
+                "dcim.interfacetemplate",
+                "dcim.cable",
+            ]:
+                self.logger.info(f"Skipping {content_type_label}")
+                continue
+
+            records = [record for record in self.source_data if record["model"] == content_type_label]
+            if records:
+                for record in ProgressBar(
+                    records,
+                    desc=f"{modelname:<25}",  # len("consoleserverporttemplate")
+                    verbosity=self.verbosity,
+                ):
+                    # self.logger.info(f"Record: {record}")
+                    # if record['model'] == 'contenttypes.contenttype':
+                    #     continue
+                    if not self.load_record(diffsync_model, record):
+                        self.logger.error(f"Record: {record}")
+                        sys.exit()
 
         self.logger.info("Data loading from NetBox source data complete.")
         # Discard the source data to free up memory

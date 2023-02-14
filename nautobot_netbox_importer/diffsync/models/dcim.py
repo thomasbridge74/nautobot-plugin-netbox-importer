@@ -179,6 +179,12 @@ class Device(ConfigContextModelMixin, StatusModelMixin, PrimaryModel):
     primary_ip6: Optional[IPAddressRef]
     comments: str
 
+    @validator("position", pre=True)
+    def position_to_int(cls, value):  # pylint: disable=no-self-argument,no-self-use
+        """Convert height from string to int"""
+        if type(value) is str:
+            value = int(value.split(".")[0])
+        return value
 
 class DeviceBay(ComponentModel):
     """An empty space within a Device which can house a child Device."""
@@ -253,6 +259,13 @@ class DeviceType(PrimaryModel):
         """Convert ImageFieldFile objects to strings."""
         if hasattr(value, "name"):
             value = value.name
+        return value
+
+    @validator("u_height", pre=True)
+    def u_height_to_int(cls, value):  # pylint: disable=no-self-argument,no-self-use
+        """Convert height from string to int"""
+        if type(value) is str:
+            value = int(value.split(".")[0])
         return value
 
 
@@ -629,9 +642,10 @@ class Site(StatusModelMixin, PrimaryModel):
         "shipping_address",
         "latitude",
         "longitude",
-        "contact_name",
-        "contact_phone",
-        "contact_email",
+        # Netbox doesn't use contact details as of Netbox 3.2
+        # "contact_name",
+        # "contact_phone",
+        # "contact_email",
         "comments",
     )
     _nautobot_model = dcim.Site
@@ -648,9 +662,9 @@ class Site(StatusModelMixin, PrimaryModel):
     shipping_address: str
     latitude: Optional[float]
     longitude: Optional[float]
-    contact_name: str
-    contact_phone: str
-    contact_email: str
+    # contact_name: str
+    # contact_phone: str
+    # contact_email: str
     comments: str
 
     _name: Optional[str]
