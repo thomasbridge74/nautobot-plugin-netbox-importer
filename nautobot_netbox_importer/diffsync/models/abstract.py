@@ -494,9 +494,9 @@ class ChangeLoggedModelMixin(BaseModel):
     def check_created(cls, value):  # pylint: disable=no-self-argument,no-self-use
         """Pre-cleaning: in JSON dump from Django, date string is formatted differently than Pydantic expects."""
         if isinstance(value, str):
-            x = re.search("(T\d+:\d+:[\d\.]+Z)$", value)
-            if x:
-                value = value.replace(x[1], "")
+            date_search = re.search(r"(T\d+:\d+:[\d\.]+Z)$", value)
+            if date_search:
+                value = value.replace(date_search[1], "")
         return value
 
 

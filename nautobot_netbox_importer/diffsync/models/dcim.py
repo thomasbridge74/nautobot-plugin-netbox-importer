@@ -182,7 +182,7 @@ class Device(ConfigContextModelMixin, StatusModelMixin, PrimaryModel):
     @validator("position", pre=True)
     def position_to_int(cls, value):  # pylint: disable=no-self-argument,no-self-use
         """Convert height from string to int."""
-        if type(value) is str:
+        if isinstance(value, str):
             value = int(value.split(".")[0])
         return value
 
@@ -265,7 +265,7 @@ class DeviceType(PrimaryModel):
     @validator("u_height", pre=True)
     def u_height_to_int(cls, value):  # pylint: disable=no-self-argument,no-self-use
         """Convert height from string to int."""
-        if type(value) is str:
+        if isinstance(value, str):
             value = int(value.split(".")[0])
         return value
 
